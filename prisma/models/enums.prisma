@@ -4,3 +4,31 @@ enum UserRole {
     ADMIN
     SUPER_ADMIN
 }
+
+enum JobType {
+    FULL_TIME
+    PART_TIME
+    CONTRACT
+    INTERNSHIP
+    FREELANCE
+}
+
+enum WorkMode {
+    ONSITE
+    REMOTE
+    HYBRID
+}
+
+enum ExperienceLevel {
+    ENTRY
+    MID
+    SENIOR
+    LEAD
+}
+
+enum JobStatus {
+    DRAFT
+    PUBLISHED
+    CLOSED
+    ARCHIVED
+}

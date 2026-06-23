@@ -1,0 +1,25 @@
+model Job {
+    id                  String           @id @default(uuid()) @db.Uuid
+    companyProfileId    String           @map("company_profile_id") @db.Uuid
+    title               String           @db.VarChar(200)
+    description         String
+    salaryMin           Int?             @map("salary_min")
+    salaryMax           Int?             @map("salary_max")
+    currency            String?          @db.VarChar(10)
+    jobType             JobType          @map("job_type")
+    workMode            WorkMode         @map("work_mode")
+    experienceLevel     ExperienceLevel? @map("experience_level")
+    vacancies           Int?
+    city                String?          @db.VarChar(100)
+    country             String?          @db.VarChar(100)
+    applicationDeadline DateTime?        @map("application_deadline") @db.Date
+    status              JobStatus        @default(DRAFT)
+    createdAt           DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+    updatedAt           DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+    companyProfile CompanyProfile @relation(fields: [companyProfileId], references: [id], onDelete: Cascade)
+
+    @@index([companyProfileId])
+    @@index([status])
+    @@map("jobs")
+}
