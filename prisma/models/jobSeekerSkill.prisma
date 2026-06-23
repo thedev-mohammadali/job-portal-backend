@@ -1,0 +1,10 @@
+model JobSeekerSkill {
+    jobSeekerProfileId String @map("job_seeker_profile_id") @db.Uuid
+    skillId            String @map("skill_id") @db.Uuid
+
+    jobSeekerProfile JobSeekerProfile @relation(fields: [jobSeekerProfileId], references: [id], onDelete: Cascade)
+    skill            Skill            @relation(fields: [skillId], references: [id])
+
+    @@id([jobSeekerProfileId, skillId])
+    @@map("job_seeker_skills")
+}
