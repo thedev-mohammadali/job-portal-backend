@@ -1,0 +1,25 @@
+model CompanyProfile {
+    id            String   @id @default(uuid()) @db.Uuid
+    userId        String   @unique @map("user_id") @db.Uuid
+    user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    companyName   String   @map("company_name") @db.VarChar(100)
+    city          String   @db.VarChar(100)
+    country       String   @db.VarChar(100)
+    industry      String   @db.VarChar(100)
+    websiteUrl    String?  @map("website_url")
+    foundedYear   Int?     @map("founded_year")
+    description   String?
+    hrEmail       String   @map("hr_email") @db.VarChar(150)
+    supportEmail  String?  @map("support_email") @db.VarChar(150)
+    phone         String   @db.VarChar(30)
+    logoUrl       String?  @map("logo_url")
+    linkedinUrl   String?  @map("linkedin_url")
+    twitterUrl    String?  @map("twitter_url")
+    facebookUrl   String?  @map("facebook_url")
+    instagramUrl  String?  @map("instagram_url")
+    employeeCount Int?     @map("employee_count")
+    createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+    updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+    @@map("company_profiles")
+}
