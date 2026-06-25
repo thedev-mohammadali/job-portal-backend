@@ -17,7 +17,8 @@ model Job {
     createdAt           DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
     updatedAt           DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-    companyProfile CompanyProfile @relation(fields: [companyProfileId], references: [id], onDelete: Cascade)
+    companyProfile    CompanyProfile     @relation(fields: [companyProfileId], references: [id], onDelete: Cascade)
+    jobRequiredSkills JobRequiredSkill[]
 
     @@index([companyProfileId])
     @@index([status])

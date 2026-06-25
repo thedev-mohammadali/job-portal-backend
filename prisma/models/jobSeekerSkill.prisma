@@ -6,5 +6,6 @@ model JobSeekerSkill {
     skill            Skill            @relation(fields: [skillId], references: [id])
 
     @@id([jobSeekerProfileId, skillId])
+    @@index([skillId])
     @@map("job_seeker_skills")
 }

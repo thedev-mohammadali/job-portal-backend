@@ -1,0 +1,11 @@
+model JobRequiredSkill {
+    jobId   String @map("job_id") @db.Uuid
+    skillId String @map("skill_id") @db.Uuid
+
+    job   Job   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+    skill Skill @relation(fields: [skillId], references: [id])
+
+    @@id([jobId, skillId])
+    @@index([skillId])
+    @@map("job_required_skills")
+}
