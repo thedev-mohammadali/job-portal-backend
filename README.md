@@ -111,15 +111,60 @@ SUBMITTED
 
 ```text
 src/
-├── controllers/
-├── services/
-├── routes/
+│
+├── config/
+│   ├── env.ts
+│   └── prisma.ts
+│
+├── generated/
+│
+├── modules/
+│   │
+│   ├── auth/
+│   │   ├── auth.controller.ts
+│   │   ├── auth.service.ts
+│   │   ├── auth.route.ts
+│   │   ├── auth.validation.ts
+│   │   ├── auth.interface.ts
+│   │   └── auth.constant.ts
+│   │
+│   ├── user/
+│   │   ├── user.controller.ts
+│   │   ├── user.service.ts
+│   │   ├── user.route.ts
+│   │   ├── user.validation.ts
+│   │   ├── user.interface.ts
+│   │   └── user.constant.ts
+│   │
+│   ├── job/
+│   ├── company/
+│   ├── application/
+│   ├── skill/
+│   └── savedJob/
+│
 ├── middlewares/
+│   ├── auth.ts
+│   ├── validateRequest.ts
+│   ├── notFound.ts
+│   └── globalErrorHandler.ts
+│
 ├── utils/
-└── config/
-
-prisma/
-└── schema.prisma
+│   ├── ApiError.ts
+│   ├── catchAsync.ts
+│   ├── sendResponse.ts
+│   ├── jwt.ts
+│   ├── password.ts
+│   └── pagination.ts
+│
+├── types/
+│   ├── express.d.ts
+│   └── common.ts
+│
+├── routes/
+│   └── index.ts
+│
+├── app.ts
+└── server.ts
 ```
 
 ---
