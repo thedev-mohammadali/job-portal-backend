@@ -21,6 +21,7 @@ model JobSeekerProfile {
 
     jobSeekerSkills JobSeekerSkill[]
     applications    Application[]
+    savedJobs       SavedJob[]
 
     @@map("job_seeker_profiles")
 }

@@ -1,0 +1,11 @@
+model SavedJob {
+    jobSeekerProfileId String   @map("job_seeker_profile_id") @db.Uuid
+    jobId              String   @map("job_id") @db.Uuid
+    savedAt            DateTime @default(now()) @map("saved_at") @db.Timestamptz(3)
+
+    jobSeekerProfile JobSeekerProfile @relation(fields: [jobSeekerProfileId], references: [id], onDelete: Cascade)
+    job              Job              @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+    @@id([jobSeekerProfileId, jobId])
+    @@map("saved_jobs")
+}

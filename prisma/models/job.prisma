@@ -20,6 +20,7 @@ model Job {
     companyProfile    CompanyProfile     @relation(fields: [companyProfileId], references: [id], onDelete: Cascade)
     jobRequiredSkills JobRequiredSkill[]
     applications      Application[]
+    savedJobs         SavedJob[]
 
     @@index([companyProfileId])
     @@index([status])
