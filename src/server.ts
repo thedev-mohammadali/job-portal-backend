@@ -1,8 +1,22 @@
 import app from "./app";
 import env from "./config/env";
+import { prisma } from "./config/prisma";
 
 const PORT = env.port;
 
-app.listen(PORT, () => {
-  console.log(`Server is listening at port: ${PORT}`);
-});
+const main = async () => {
+  try {
+    await prisma.$connect();
+    await prisma.$queryRaw`SELECT 1`;
+    console.log(`Database  connected successfully.`);
+
+    app.listen(PORT, () => {
+      console.log(`Server is listening at port: ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start the server.", error);
+    process.exit(1);
+  }
+};
+
+main();
