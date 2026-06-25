@@ -20,6 +20,7 @@ model JobSeekerProfile {
     updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
     jobSeekerSkills JobSeekerSkill[]
+    applications    Application[]
 
     @@map("job_seeker_profiles")
 }
