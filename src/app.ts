@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import status from "http-status";
+import router from "./routes";
 
 const app = express();
 
@@ -13,5 +14,7 @@ app.get("/", (req, res) => {
     message: "Welcome to Job Portal",
   });
 });
+
+app.use("/api/v1", router);
 
 export default app;
