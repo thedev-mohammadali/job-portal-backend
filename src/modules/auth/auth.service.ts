@@ -6,11 +6,11 @@ import { IRegisterPayload } from "./auth.interface";
 const registerUser = async (payload: IRegisterPayload) => {
   const { email, password, role } = payload;
 
-  const userExist = await prisma.user.findUnique({
+  const existingUser = await prisma.user.findUnique({
     where: { email },
   });
 
-  if (userExist) {
+  if (existingUser) {
     throw new Error("User already exists with this email.");
   }
 
