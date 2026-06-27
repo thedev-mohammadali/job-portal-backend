@@ -12,3 +12,10 @@ export interface IRegisterPayload {
 }
 
 export type RegisterRequest = Request<{}, {}, IRegisterPayload>;
+
+export interface ILoginPayload {
+  email: string;
+  password: string;
+}
+
+export type LoginRequest = Request<{}, {}, ILoginPayload>;

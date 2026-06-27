@@ -1,7 +1,7 @@
 import status from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { RegisterRequest } from "./auth.interface";
+import type { LoginRequest, RegisterRequest } from "./auth.interface";
 import { authService } from "./auth.service";
 
 const registerUser = catchAsync(async (req: RegisterRequest, res) => {
@@ -15,6 +15,18 @@ const registerUser = catchAsync(async (req: RegisterRequest, res) => {
   });
 });
 
+const loginUser = catchAsync(async (req: LoginRequest, res) => {
+  const loggedInUser = await authService.loginUser(req.body);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Log in successful",
+    data: loggedInUser,
+  });
+});
+
 export const authController = {
   registerUser,
+  loginUser,
 };

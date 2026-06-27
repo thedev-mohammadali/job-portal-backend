@@ -3,7 +3,7 @@ import status from "http-status";
 import env from "../../config/env";
 import { prisma } from "../../config/prisma";
 import AppError from "../../utils/AppError";
-import { IRegisterPayload } from "./auth.interface";
+import { ILoginPayload, IRegisterPayload } from "./auth.interface";
 
 const registerUser = async (payload: IRegisterPayload) => {
   const { email, password, role } = payload;
@@ -35,6 +35,45 @@ const registerUser = async (payload: IRegisterPayload) => {
   return registeredUser;
 };
 
+const loginUser = async (payload: ILoginPayload) => {
+  const { email, password } = payload;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+    select: {
+      id: true,
+      email: true,
+      password: true,
+      role: true,
+      isActive: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid email or password");
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid email or password");
+  }
+
+  if (!user.isActive) {
+    throw new AppError(
+      status.FORBIDDEN,
+      "Account is inactive. Please contact support",
+    );
+  }
+
+  const { password: _, ...userWithoutPassword } = user;
+
+  return userWithoutPassword;
+};
+
 export const authService = {
   registerUser,
+  loginUser,
 };
