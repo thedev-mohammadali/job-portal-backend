@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import status from "http-status";
+import jwt from "jsonwebtoken";
 import env from "../../config/env";
 import { prisma } from "../../config/prisma";
 import AppError from "../../utils/AppError";
@@ -70,7 +71,25 @@ const loginUser = async (payload: ILoginPayload) => {
 
   const { password: _, ...userWithoutPassword } = user;
 
-  return userWithoutPassword;
+  const jwtPayload = {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    isAtive: user.isActive,
+  };
+
+  const accessToken = jwt.sign(jwtPayload, env.jwtAccessSecret, {
+    expiresIn: env.jwtAccessExpiresIn,
+  });
+  const refreshToken = jwt.sign(jwtPayload, env.jwtRefreshSecret, {
+    expiresIn: env.jwtRefreshExpiresIn,
+  });
+
+  return {
+    user: userWithoutPassword,
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const authService = {
