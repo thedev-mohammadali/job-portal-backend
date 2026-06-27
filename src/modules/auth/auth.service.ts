@@ -72,10 +72,8 @@ const loginUser = async (payload: ILoginPayload) => {
   const { password: _, ...userWithoutPassword } = user;
 
   const jwtPayload = {
-    id: user.id,
-    email: user.email,
+    userId: user.id,
     role: user.role,
-    isAtive: user.isActive,
   };
 
   const accessToken = jwt.sign(jwtPayload, env.jwtAccessSecret, {
