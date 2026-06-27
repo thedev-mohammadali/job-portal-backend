@@ -13,7 +13,8 @@ const globalErrorHanlder: ErrorRequestHandler = (
   _next,
 ) => {
   if (error instanceof AppError) {
-    return sendResponse(res, error.statusCode, {
+    return sendResponse(res, {
+      statusCode: error.statusCode,
       success: false,
       message: error.message,
       errorStack: development ? error.stack : undefined,
@@ -21,14 +22,16 @@ const globalErrorHanlder: ErrorRequestHandler = (
   }
 
   if (error instanceof Error) {
-    return sendResponse(res, status.INTERNAL_SERVER_ERROR, {
+    return sendResponse(res, {
+      statusCode: status.INTERNAL_SERVER_ERROR,
       success: false,
       message: development ? error.message : "Something went wrong",
       errorStack: development ? error.stack : undefined,
     });
   }
 
-  return sendResponse(res, status.INTERNAL_SERVER_ERROR, {
+  return sendResponse(res, {
+    statusCode: status.INTERNAL_SERVER_ERROR,
     success: false,
     message: "Something went wrong",
   });

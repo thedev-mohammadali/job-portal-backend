@@ -1,25 +1,32 @@
 import { Response } from "express";
 
-interface IResponseMetaData {
+export interface PaginationMeta {
   page: number;
   limit: number;
   total: number;
 }
 
-interface ISendResponse<T> {
-  success: boolean;
+export interface SuccessResponse<T> {
+  statusCode: number;
+  success: true;
   message: string;
-  meta?: IResponseMetaData;
+  meta?: PaginationMeta;
   data?: T;
+}
+
+export interface ErrorResponse {
+  statusCode: number;
+  success: false;
+  message: string;
   errorStack?: string;
 }
 
 const sendResponse = <T>(
   res: Response,
-  statusCode: number,
-  resData: ISendResponse<T>,
+  response: SuccessResponse<T> | ErrorResponse,
 ) => {
-  return res.status(statusCode).json(resData);
+  const { statusCode, ...responseBody } = response;
+  return res.status(statusCode).json(responseBody);
 };
 
 export default sendResponse;

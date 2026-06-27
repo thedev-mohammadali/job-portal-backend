@@ -7,7 +7,8 @@ import { authService } from "./auth.service";
 const registerUser = catchAsync(async (req: RegisterRequest, res) => {
   const registeredUser = await authService.registerUser(req.body);
 
-  sendResponse(res, status.CREATED, {
+  sendResponse(res, {
+    statusCode: status.CREATED,
     success: true,
     message: "User created successfully",
     data: registeredUser,
