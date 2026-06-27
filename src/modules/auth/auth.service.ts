@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
+import status from "http-status";
 import env from "../../config/env";
 import { prisma } from "../../config/prisma";
+import AppError from "../../utils/AppError";
 import { IRegisterPayload } from "./auth.interface";
 
 const registerUser = async (payload: IRegisterPayload) => {
@@ -11,7 +13,7 @@ const registerUser = async (payload: IRegisterPayload) => {
   });
 
   if (existingUser) {
-    throw new Error("User already exists with this email.");
+    throw new AppError(status.CONFLICT, "User already exists with this email.");
   }
 
   const hashedPassword = await bcrypt.hash(password, env.saltRounds);
