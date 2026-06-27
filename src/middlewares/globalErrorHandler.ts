@@ -2,6 +2,7 @@ import { ErrorRequestHandler } from "express";
 import status from "http-status";
 import env from "../config/env";
 import AppError from "../utils/AppError";
+import sendResponse from "../utils/sendResponse";
 
 const development = env.nodeEnv === "development";
 
@@ -12,7 +13,7 @@ const globalErrorHanlder: ErrorRequestHandler = (
   _next,
 ) => {
   if (error instanceof AppError) {
-    return res.status(error.statusCode).json({
+    return sendResponse(res, error.statusCode, {
       success: false,
       message: error.message,
       errorStack: development ? error.stack : undefined,
@@ -20,14 +21,14 @@ const globalErrorHanlder: ErrorRequestHandler = (
   }
 
   if (error instanceof Error) {
-    return res.status(status.INTERNAL_SERVER_ERROR).json({
+    return sendResponse(res, status.INTERNAL_SERVER_ERROR, {
       success: false,
       message: development ? error.message : "Something went wrong",
       errorStack: development ? error.stack : undefined,
     });
   }
 
-  return res.status(status.INTERNAL_SERVER_ERROR).json({
+  return sendResponse(res, status.INTERNAL_SERVER_ERROR, {
     success: false,
     message: "Something went wrong",
   });
