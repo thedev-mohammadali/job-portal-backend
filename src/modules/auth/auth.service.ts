@@ -73,7 +73,6 @@ const loginUser = async (payload: ILoginPayload) => {
 
   const jwtPayload = {
     userId: user.id,
-    role: user.role,
   };
 
   const accessToken = jwt.sign(jwtPayload, env.jwtAccessSecret, {
