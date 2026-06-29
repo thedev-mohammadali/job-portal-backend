@@ -1,5 +1,8 @@
+import status from "http-status";
+import { prisma } from "../../config/prisma";
 import { Prisma } from "../../generated/prisma/client";
 import { PrismaClient } from "../../generated/prisma/internal/class";
+import AppError from "../../utils/AppError";
 
 interface CreateSessionInput {
   id: string;
@@ -18,6 +21,38 @@ const createSession = async (db: PrismaExecutor, input: CreateSessionInput) => {
   });
 };
 
+const getValidSessionByTokenHash = async (tokenHash: string) => {
+  const sessionInfo = await prisma.session.findUnique({
+    where: { tokenHash },
+  });
+
+  if (!sessionInfo) {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Authentication required. Please log in to continue",
+    );
+  }
+
+  const { expiresAt, revokedAt } = sessionInfo;
+
+  if (revokedAt) {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Authentication required. Please log in to continue",
+    );
+  }
+
+  if (expiresAt <= new Date()) {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Authentication required. Please log in to continue",
+    );
+  }
+
+  return sessionInfo;
+};
+
 export const sessionService = {
   createSession,
+  getValidSessionByTokenHash,
 };

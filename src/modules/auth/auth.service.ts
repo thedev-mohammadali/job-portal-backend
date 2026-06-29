@@ -10,6 +10,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
   hashToken,
+  verifyRefreshToken,
 } from "./auth.utils";
 
 const registerUser = async (payload: IRegisterPayload) => {
@@ -110,7 +111,46 @@ const loginUser = async (payload: ILoginPayload) => {
   };
 };
 
+const refreshToken = async (payload: string) => {
+  if (!payload) {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Authentication required. Please log in to continue",
+    );
+  }
+
+  const decoded = verifyRefreshToken(payload);
+
+  const tokenHash = hashToken(payload);
+
+  const session = await sessionService.getValidSessionByTokenHash(tokenHash);
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: {
+      id: true,
+      isActive: true,
+    },
+  });
+
+  if (!user || !user.isActive) {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Authentication required. Please log in to continue",
+    );
+  }
+
+  const jwtPayload = {
+    userId: user.id,
+  };
+
+  const accessToken = generateAccessToken(jwtPayload);
+
+  return { accessToken };
+};
+
 export const authService = {
   registerUser,
   loginUser,
+  refreshToken,
 };
