@@ -1,4 +1,5 @@
-import { prisma } from "../../config/prisma";
+import { Prisma } from "../../generated/prisma/client";
+import { PrismaClient } from "../../generated/prisma/internal/class";
 
 interface CreateSessionInput {
   id: string;
@@ -9,8 +10,10 @@ interface CreateSessionInput {
   userAgent?: string;
 }
 
-const createSession = async (input: CreateSessionInput) => {
-  await prisma.session.create({
+type PrismaExecutor = PrismaClient | Prisma.TransactionClient;
+
+const createSession = async (db: PrismaExecutor, input: CreateSessionInput) => {
+  await db.session.create({
     data: input,
   });
 };

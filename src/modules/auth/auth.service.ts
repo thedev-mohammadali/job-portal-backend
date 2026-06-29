@@ -75,14 +75,6 @@ const loginUser = async (payload: ILoginPayload) => {
     );
   }
 
-  const { password: _, ...userWithoutPassword } = user;
-
-  const jwtPayload = {
-    userId: user.id,
-  };
-
-  const accessToken = generateAccessToken(jwtPayload);
-
   const sessionId = randomUUID();
 
   const jwtRefreshTokenPayload = {
@@ -96,12 +88,20 @@ const loginUser = async (payload: ILoginPayload) => {
 
   const tokenHash = hashToken(refreshToken);
 
-  await sessionService.createSession({
+  await sessionService.createSession(prisma, {
     id: sessionId,
     userId: user.id,
     tokenHash,
     expiresAt,
   });
+
+  const jwtPayload = {
+    userId: user.id,
+  };
+
+  const accessToken = generateAccessToken(jwtPayload);
+
+  const { password: _, ...userWithoutPassword } = user;
 
   return {
     user: userWithoutPassword,
