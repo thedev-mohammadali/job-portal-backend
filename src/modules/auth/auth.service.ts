@@ -112,18 +112,7 @@ const loginUser = async (payload: ILoginPayload) => {
 };
 
 const refreshToken = async (payload: string) => {
-  if (!payload) {
-    throw new AppError(
-      status.UNAUTHORIZED,
-      "Authentication required. Please log in to continue",
-    );
-  }
-
-  verifyRefreshToken(payload);
-
-  const tokenHash = hashToken(payload);
-
-  const session = await sessionService.getValidSessionByTokenHash(tokenHash);
+  const session = await validateRefreshSession(payload);
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
@@ -150,19 +139,25 @@ const refreshToken = async (payload: string) => {
 };
 
 const logoutUser = async (payload: string) => {
-  if (!payload) {
+  const session = await validateRefreshSession(payload);
+
+  await sessionService.revokeSessionById(session.id);
+};
+
+// Helper functions
+const validateRefreshSession = async (refreshToken: string) => {
+  if (!refreshToken) {
     throw new AppError(
       status.UNAUTHORIZED,
       "Authentication required. Please log in to continue",
     );
   }
 
-  verifyRefreshToken(payload);
+  verifyRefreshToken(refreshToken);
 
-  const tokenHash = hashToken(payload);
+  const tokenHash = hashToken(refreshToken);
 
-  const session = await sessionService.getValidSessionByTokenHash(tokenHash);
-  await sessionService.revokeSessionById(session.id);
+  return sessionService.getValidSessionByTokenHash(tokenHash);
 };
 
 export const authService = {
