@@ -119,7 +119,7 @@ const refreshToken = async (payload: string) => {
     );
   }
 
-  const decoded = verifyRefreshToken(payload);
+  verifyRefreshToken(payload);
 
   const tokenHash = hashToken(payload);
 
@@ -149,8 +149,25 @@ const refreshToken = async (payload: string) => {
   return { accessToken };
 };
 
+const logoutUser = async (payload: string) => {
+  if (!payload) {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Authentication required. Please log in to continue",
+    );
+  }
+
+  verifyRefreshToken(payload);
+
+  const tokenHash = hashToken(payload);
+
+  const session = await sessionService.getValidSessionByTokenHash(tokenHash);
+  await sessionService.revokeSessionById(session.id);
+};
+
 export const authService = {
   registerUser,
   loginUser,
   refreshToken,
+  logoutUser,
 };
