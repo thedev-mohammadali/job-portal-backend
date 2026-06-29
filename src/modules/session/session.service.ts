@@ -1,3 +1,5 @@
+import { prisma } from "../../config/prisma";
+
 interface CreateSessionInput {
   id: string;
   userId: string;
@@ -7,7 +9,11 @@ interface CreateSessionInput {
   userAgent?: string;
 }
 
-const createSession = async (input: CreateSessionInput) => {};
+const createSession = async (input: CreateSessionInput) => {
+  await prisma.session.create({
+    data: input,
+  });
+};
 
 export const sessionService = {
   createSession,

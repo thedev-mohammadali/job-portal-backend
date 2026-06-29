@@ -1,10 +1,16 @@
 import bcrypt from "bcrypt";
 import status from "http-status";
-import jwt from "jsonwebtoken";
+import { randomUUID } from "node:crypto";
 import env from "../../config/env";
 import { prisma } from "../../config/prisma";
 import AppError from "../../utils/AppError";
+import { sessionService } from "../session/session.service";
 import { ILoginPayload, IRegisterPayload } from "./auth.interface";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  hashToken,
+} from "./auth.utils";
 
 const registerUser = async (payload: IRegisterPayload) => {
   const { email, password, role } = payload;
@@ -75,17 +81,31 @@ const loginUser = async (payload: ILoginPayload) => {
     userId: user.id,
   };
 
-  const accessToken = jwt.sign(jwtPayload, env.jwtAccessSecret, {
-    expiresIn: env.jwtAccessExpiresIn,
-  });
-  const refreshToken = jwt.sign(jwtPayload, env.jwtRefreshSecret, {
-    expiresIn: env.jwtRefreshExpiresIn,
+  const accessToken = generateAccessToken(jwtPayload);
+
+  const sessionId = randomUUID();
+
+  const jwtRefreshTokenPayload = {
+    userId: user.id,
+    sessionId,
+  };
+
+  const { refreshToken, expiresAt } = generateRefreshToken(
+    jwtRefreshTokenPayload,
+  );
+
+  const tokenHash = hashToken(refreshToken);
+
+  await sessionService.createSession({
+    id: sessionId,
+    userId: user.id,
+    tokenHash,
+    expiresAt,
   });
 
   return {
     user: userWithoutPassword,
     accessToken,
-    refreshToken,
   };
 };
 
