@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import status from "http-status";
@@ -6,10 +7,11 @@ import router from "./routes";
 
 const app = express();
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.status(status.OK).json({
     success: true,
     message: "Welcome to Job Portal",

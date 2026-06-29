@@ -106,6 +106,7 @@ const loginUser = async (payload: ILoginPayload) => {
   return {
     user: userWithoutPassword,
     accessToken,
+    refreshToken,
   };
 };
 
