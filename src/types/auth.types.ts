@@ -5,6 +5,11 @@ export interface JwtUserPayload extends JwtPayload {
   userId: string;
 }
 
+export interface JwtRefreshTokenPayload extends JwtPayload {
+  userId: string;
+  sessionId: string;
+}
+
 export interface AuthUser {
   id: string;
   email: string;
