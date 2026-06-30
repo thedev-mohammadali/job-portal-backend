@@ -76,6 +76,7 @@ const loginUser = async (payload: ILoginPayload) => {
     );
   }
 
+  //Copy to refresh token
   const sessionId = randomUUID();
 
   const jwtRefreshTokenPayload = {
@@ -95,6 +96,7 @@ const loginUser = async (payload: ILoginPayload) => {
     tokenHash,
     expiresAt,
   });
+  //copy-end
 
   const jwtPayload = {
     userId: user.id,
@@ -129,19 +131,43 @@ const refreshToken = async (payload: string) => {
     );
   }
 
+  const sessionId = randomUUID();
+
+  const jwtRefreshTokenPayload = {
+    userId: user.id,
+    sessionId,
+  };
+
+  const { refreshToken, expiresAt } = generateRefreshToken(
+    jwtRefreshTokenPayload,
+  );
+
+  const tokenHash = hashToken(refreshToken);
+
+  await prisma.$transaction(async (tx) => {
+    await sessionService.revokeSessionById(tx, session.id);
+
+    await sessionService.createSession(tx, {
+      id: sessionId,
+      userId: user.id,
+      tokenHash,
+      expiresAt,
+    });
+  });
+
   const jwtPayload = {
     userId: user.id,
   };
 
   const accessToken = generateAccessToken(jwtPayload);
 
-  return { accessToken };
+  return { accessToken, refreshToken };
 };
 
 const logoutUser = async (payload: string) => {
   const session = await validateRefreshSession(payload);
 
-  await sessionService.revokeSessionById(session.id);
+  await sessionService.revokeSessionById(prisma, session.id);
 };
 
 // Helper functions

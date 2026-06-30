@@ -32,7 +32,10 @@ const loginUser = catchAsync(async (req: LoginRequest, res) => {
 const refreshToken = catchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
 
-  const accessToken = await authService.refreshToken(refreshToken);
+  const { accessToken, refreshToken: newRefreshToken } =
+    await authService.refreshToken(refreshToken);
+
+  res.cookie("refreshToken", newRefreshToken, refreshCookieOptions);
 
   sendResponse(res, {
     statusCode: status.OK,

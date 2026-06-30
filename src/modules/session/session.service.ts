@@ -52,8 +52,8 @@ const getValidSessionByTokenHash = async (tokenHash: string) => {
   return sessionInfo;
 };
 
-const revokeSessionById = async (sessionId: string) => {
-  await prisma.session.update({
+const revokeSessionById = async (db: PrismaExecutor, sessionId: string) => {
+  await db.session.update({
     where: { id: sessionId },
     data: {
       revokedAt: new Date(),
