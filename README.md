@@ -1,141 +1,295 @@
 # 🚀 Job Portal Backend API
 
-A production-leaning backend system for a Job Portal platform built with **Node.js, Express, TypeScript, PostgreSQL, and Prisma ORM**.
+A production-oriented backend API for a Job Portal platform built with **Node.js, Express, TypeScript, PostgreSQL, and Prisma ORM**.
+
+The project focuses on clean architecture, security, scalability, and production backend practices rather than simply implementing CRUD APIs.
 
 ---
 
-## 📌 Project Overview
+# 📌 Project Overview
 
-This project is a backend API for a Job Portal system where job seekers can apply for jobs and employers can manage job postings and applications.
+This project powers a Job Portal platform where:
 
-The system is designed with **real-world backend architecture principles**, including role-based access control, job lifecycle management, and strict data integrity rules.
+- Job seekers can search and apply for jobs.
+- Employers can manage job postings and applications.
+- Administrators can manage users and platform activities.
+
+The backend is designed using production-inspired architecture with clear separation of concerns, session-based authentication, and role-based authorization.
 
 ---
 
-## 🧱 Tech Stack
+# 🧱 Tech Stack
 
 - Node.js
 - Express.js
 - TypeScript
 - PostgreSQL
 - Prisma ORM
-- JWT Authentication (Access + Refresh Tokens)
+- JWT (Access + Refresh Tokens)
+- bcrypt
+- cookie-parser
+- http-status
+- ms
 
 ---
 
-## 👥 User Roles
+# 🏛️ Architecture
+
+The project follows a layered architecture:
+
+```text
+Client
+   │
+   ▼
+Routes
+   │
+   ▼
+Controllers
+   │
+   ▼
+Services
+   │
+   ▼
+Prisma ORM
+   │
+   ▼
+PostgreSQL
+```
+
+### Design Principles
+
+- Thin Controllers / Fat Services
+- Feature-based module organization
+- Shared utilities
+- Strict TypeScript
+- Production-oriented architecture
+- Small atomic Git commits
+- Separation of authentication and session management
+- Favor readability over clever abstractions
+
+---
+
+# 🔐 Authentication
+
+Implemented features:
+
+- ✅ User Registration
+- ✅ User Login
+- ✅ JWT Access Tokens
+- ✅ JWT Refresh Tokens
+- ✅ HttpOnly Refresh Cookies
+- ✅ Session-based Refresh Authentication
+- ✅ Multiple Device Login Support
+- ✅ Refresh Token Rotation
+- ✅ Logout
+- ✅ Authentication Middleware
+- ✅ Role-based Authorization Middleware
+- ✅ Refresh Token Hashing (SHA-256)
+- ✅ Session Revocation
+- ✅ Active User Validation
+
+### Authentication Flow
+
+```text
+Login
+
+Credentials
+      │
+      ▼
+Verify User
+      │
+Generate Session
+      │
+Generate Refresh Token
+      │
+Hash Refresh Token
+      │
+Store Session
+      │
+Generate Access Token
+      │
+Return
+```
+
+### Refresh Flow
+
+```text
+Refresh Token
+      │
+Verify JWT
+      │
+Validate Session
+      │
+Validate User
+      │
+Rotate Refresh Token
+      │
+Revoke Old Session
+      │
+Create New Session
+      │
+Generate New Access Token
+      │
+Return Tokens
+```
+
+### Logout Flow
+
+```text
+Refresh Token
+      │
+Verify JWT
+      │
+Validate Session
+      │
+Revoke Session
+      │
+Clear Cookie
+```
+
+---
+
+# 🔒 Session Management
+
+Sessions are persisted in PostgreSQL.
+
+Each login creates a separate session.
+
+Features:
+
+- Multiple concurrent device logins
+- Session revocation
+- Refresh token rotation
+- Hashed refresh tokens
+- Expiration tracking
+- Soft revocation using `revokedAt`
+
+Refresh tokens are **never stored in plaintext**.
+
+```text
+SHA-256(refreshToken)
+```
+
+---
+
+# 👥 User Roles
 
 - JOB_SEEKER
 - EMPLOYER
 - ADMIN
 - SUPER_ADMIN
 
----
-
-## 🧠 Core Features (Planned / In Progress)
-
-### 🔐 Authentication
-
-- JWT-based authentication
-- Refresh token session system
-- Multiple device login support
-- Password change invalidates all sessions
+Role-based authorization is enforced through middleware.
 
 ---
 
-### 💼 Job System
+# 💼 Job System (Planned)
 
-- Job lifecycle:
+Job lifecycle:
 
 ```text
-DRAFT → PUBLISHED → CLOSED → ARCHIVED
+DRAFT
+    ↓
+PUBLISHED
+    ↓
+CLOSED
+    ↓
+ARCHIVED
 ```
 
-- Employers can create, update, archive, and republish jobs
-- Jobs are never hard deleted
+Features:
+
+- Employers create jobs
+- Publish jobs
+- Update jobs
+- Archive jobs
+- Republish archived jobs
+- No hard deletes
 
 ---
 
-### 📄 Application System
+# 📄 Application System (Planned)
 
-- Job seekers can apply to jobs
-- Application status flow:
+Application lifecycle:
 
 ```text
 SUBMITTED
-→ UNDER_REVIEW
-→ SHORTLISTED
-→ INTERVIEW_SCHEDULED
-→ SELECTED / REJECTED / WITHDRAWN
+        ↓
+UNDER_REVIEW
+        ↓
+SHORTLISTED
+        ↓
+INTERVIEW_SCHEDULED
+        ↓
+SELECTED
+REJECTED
+WITHDRAWN
 ```
 
-- Applications are never deleted (full history preserved)
+Applications will preserve complete history.
 
 ---
 
-### 🏢 Profile System
+# 🏢 Profile System (Planned)
 
-- Employer Profile (company-based identity)
-- Job Seeker Profile (resume, skills, experience)
-- One-to-one relationship with User
+## Employer Profile
+
+- Company information
+- Logo
+- Description
+- Website
+
+## Job Seeker Profile
+
+- Resume
+- Skills
+- Education
+- Experience
+- Personal information
+
+Each profile has a one-to-one relationship with its User.
 
 ---
 
-### 🚨 Reporting System
+# 🚨 Reporting System (Planned)
 
-- Users can report jobs or other users
-- Reports are visible to admins
-- Reporter identity is stored (not anonymous)
+Users will be able to report:
+
+- Jobs
+- Companies
+- Other users
+
+Reports are visible only to administrators.
 
 ---
 
-### 📁 File Uploads
+# 📁 File Uploads (Planned)
 
-- Resume uploads stored locally (`/uploads`)
+Initial implementation:
+
+- Local storage (`/uploads`)
 - Database stores file path only
-- Cloud storage integration planned for future
+
+Future:
+
+- AWS S3
+- Cloudflare R2
+- Azure Blob Storage
 
 ---
 
-## 🏗️ Architecture Principles
-
-- No hard deletes (data is preserved using ARCHIVE system)
-- Role-based access control (RBAC)
-- Clean separation of concerns (Controller → Service → DB layer)
-- Relational data integrity enforced via PostgreSQL + Prisma
-- Scalable backend structure for future growth
-
----
-
-## 📂 Project Structure (Planned)
+# 📂 Project Structure
 
 ```text
 src/
 │
 ├── config/
-│   ├── env.ts
-│   └── prisma.ts
-│
 ├── generated/
 │
 ├── modules/
-│   │
 │   ├── auth/
-│   │   ├── auth.controller.ts
-│   │   ├── auth.service.ts
-│   │   ├── auth.route.ts
-│   │   ├── auth.validation.ts
-│   │   ├── auth.interface.ts
-│   │   └── auth.constant.ts
-│   │
+│   ├── session/
 │   ├── user/
-│   │   ├── user.controller.ts
-│   │   ├── user.service.ts
-│   │   ├── user.route.ts
-│   │   ├── user.validation.ts
-│   │   ├── user.interface.ts
-│   │   └── user.constant.ts
-│   │
 │   ├── job/
 │   ├── company/
 │   ├── application/
@@ -143,25 +297,12 @@ src/
 │   └── savedJob/
 │
 ├── middlewares/
-│   ├── auth.ts
-│   ├── validateRequest.ts
-│   ├── notFound.ts
-│   └── globalErrorHandler.ts
-│
-├── utils/
-│   ├── ApiError.ts
-│   ├── catchAsync.ts
-│   ├── sendResponse.ts
-│   ├── jwt.ts
-│   ├── password.ts
-│   └── pagination.ts
-│
-├── types/
-│   ├── express.d.ts
-│   └── common.ts
 │
 ├── routes/
-│   └── index.ts
+│
+├── types/
+│
+├── utils/
 │
 ├── app.ts
 └── server.ts
@@ -169,41 +310,93 @@ src/
 
 ---
 
-## 🚧 Current Status
+# 🚧 Current Status
 
-> Project is in early development stage.
+## ✅ Completed
 
-- Backend setup not started yet
-- Prisma schema design coming next
-- Core architecture being finalized
+- Backend project setup
+- Prisma integration
+- User model
+- Authentication system
+- Session management
+- Login
+- Logout
+- Refresh token rotation
+- Authentication middleware
+- Authorization middleware
+- Error handling
+- Shared response utilities
 
----
+## 🚀 Next
 
-## ⚙️ Setup Instructions
-
-Will be added after initial backend setup is complete.
-
----
-
-## 📜 Commit Convention
-
-- `chore:` project setup and config changes
-- `feat:` new features
-- `fix:` bug fixes
-- `refactor:` code restructuring
-- `prisma:` database schema changes
-
----
-
-## 🧭 Design Philosophy
-
-- Preserve data history (no hard deletes)
-- Keep system scalable and modular
-- Favor clarity over premature optimization
-- Real-world backend patterns over toy examples
+- Logout from all devices
+- Password change with session invalidation
+- Job management
+- Employer profile
+- Job seeker profile
+- Applications
+- Saved jobs
+- Reporting system
+- File uploads
 
 ---
 
-## 📄 License
+# ⚙️ Getting Started
 
-This project is for learning and development purposes.
+```bash
+pnpm install
+```
+
+Configure your environment variables:
+
+```env
+DATABASE_URL=
+JWT_ACCESS_SECRET=
+JWT_REFRESH_SECRET=
+JWT_ACCESS_EXPIRES_IN=
+JWT_REFRESH_EXPIRES_IN=
+```
+
+Run database migrations:
+
+```bash
+pnpm prisma migrate dev
+```
+
+Start the development server:
+
+```bash
+pnpm dev
+```
+
+---
+
+# 📜 Commit Convention
+
+- `feat:` New features
+- `fix:` Bug fixes
+- `refactor:` Code improvements
+- `chore:` Tooling and configuration
+- `prisma:` Database schema changes
+
+---
+
+# 🧭 Design Philosophy
+
+This project emphasizes production backend engineering practices.
+
+Core principles include:
+
+- Preserve historical data whenever possible
+- Avoid premature abstractions
+- Keep controllers thin and services expressive
+- Prefer explicit code over clever code
+- Build features through small, reviewable commits
+- Design for scalability from the beginning
+- Use sessions for refresh-token management instead of purely stateless authentication
+
+---
+
+# 📄 License
+
+This project is developed for learning, portfolio, and backend engineering practice.

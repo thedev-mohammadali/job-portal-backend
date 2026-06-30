@@ -76,7 +76,6 @@ const loginUser = async (payload: ILoginPayload) => {
     );
   }
 
-  //Copy to refresh token
   const sessionId = randomUUID();
 
   const jwtRefreshTokenPayload = {
@@ -96,7 +95,6 @@ const loginUser = async (payload: ILoginPayload) => {
     tokenHash,
     expiresAt,
   });
-  //copy-end
 
   const jwtPayload = {
     userId: user.id,
